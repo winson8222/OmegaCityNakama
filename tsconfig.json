@@ -2,6 +2,7 @@
   "file": [
     "./main.ts",
     "./healthcheck.ts",
+    "./users.ts"
   ],
   "compilerOptions" : {
     "target": "es5",
