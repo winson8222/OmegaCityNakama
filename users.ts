@@ -35,7 +35,5 @@ function rpcUsers(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntim
     // Convert to JSON string
     const jsonString = JSON.stringify(orderedUsers);
     
-    return jsonString;
-    
-    
+    return jsonString;   
 }
