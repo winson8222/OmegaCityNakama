@@ -1,7 +1,6 @@
 // Custom online users stream, which is a stream that contains all online users
 const onlineUsersStreamId: nkruntime.Stream = {
-    mode: 255,
-    label: "Online Users",
+    mode: 200,
 }
 
 function rpcJoinOnlineUsersStream(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
@@ -17,6 +16,7 @@ function rpcJoinOnlineUsersStream(ctx: nkruntime.Context, logger: nkruntime.Logg
     nk.streamUserJoin(ctx.userId, ctx.sessionId, onlineUsersStreamId, hidden, persistence);
     logger.info("stream count: ", Number(nk.streamCount(onlineUsersStreamId)));
     logger.info("User presence", nk.streamUserGet(ctx.userId, ctx.sessionId, onlineUsersStreamId));
+    logger.info("presences", JSON.stringify(nk.streamUserList(onlineUsersStreamId)));
     return JSON.stringify({ status: 'success' });
 }
 
