@@ -18,6 +18,11 @@ function isNotification(obj: any): obj is Notification {
     return 'userId' in obj && 'subject' in obj && 'content' in obj && 'code' in obj;
 }
 
+/**
+ * Custom rpc to send a notification to a user. 
+ * The notification should have a userId which is the id of the recipient, 
+ * and a senderId which is the id of the sender.
+ */
 function rpcSendNotification(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if (!isNotification(json)) {

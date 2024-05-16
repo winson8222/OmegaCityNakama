@@ -6,6 +6,9 @@ function isRoom(obj: any): obj is Room {
     return 'roomName' in obj;
 }
 
+/**
+ * Get the stream ID of a room.
+ */
 function getRoomStreamId(room: Room): nkruntime.Stream {
     return {
         mode: 205,
@@ -13,7 +16,10 @@ function getRoomStreamId(room: Room): nkruntime.Stream {
     }
 }
 
-
+/**
+ * Join the room stream as online user.
+ * This means the user is visible to other users in the room.
+ */
 function rpcJoinRoomStreamAsOnline(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
@@ -30,6 +36,10 @@ function rpcJoinRoomStreamAsOnline(ctx: nkruntime.Context, logger: nkruntime.Log
     return JSON.stringify({ status: 'success' });
 }
 
+/**
+ * Join the room stream as offline user.
+ * This means the user is not visible to other users in the room.
+ */
 function rpcJoinRoomStreamAsOffline(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
@@ -45,11 +55,9 @@ function rpcJoinRoomStreamAsOffline(ctx: nkruntime.Context, logger: nkruntime.Lo
     return JSON.stringify({ status: 'success' });
 }
 
-// This unused rpc function is supposed to return the list of online users
-// nk.streamUserList is supposed to be used to get the list of users in the online users stream
-// However, the function does not work properly for some strange reason. It only returns an empty array
-// even though the stream has users in it.
-// Instead, retrieving the users in the online users stream is done in the next-omegacity client side 
+/**
+ * Get all online users in a room by getting all users in the room stream that are not hidden.
+ */
 function rpcGetOnlineUsersInRoom(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
@@ -72,10 +80,9 @@ function rpcGetOnlineUsersInRoom(ctx: nkruntime.Context, logger: nkruntime.Logge
     return JSON.stringify(roomOnlineUserIds);
 }
 
-// Like rpcGetOnlineUsers, this function is also unused
-// rpcCountOnlineUsers is supposed to return the number of users in the online stream
-// However, it does not work properly. It always returns 0 even though the stream has users in it
-// as nk.streamUserList always returns an empty array
+/**
+ * Count all online users in a room by getting all users in the room stream that are not hidden.
+ */
 function rpcCountRoomOnlineUsers(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
