@@ -1,6 +1,6 @@
 // Method use in main
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const updateMetaData: nkruntime.RpcFunction = function (
+const updateUserProfile: nkruntime.RpcFunction = function (
   context: nkruntime.Context,
   logger: nkruntime.Logger,
   nk: nkruntime.Nakama,

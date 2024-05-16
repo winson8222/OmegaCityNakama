@@ -10,7 +10,7 @@ function InitModule(
   initializer.registerRpc("healthcheck", rpcHealthCheck);
   initializer.registerRpc("echo", rpcEcho);
   initializer.registerRpc("list_channel_members", listChannelMembers);
-  initializer.registerRpc("update_meta_data", updateMetaData);
+  initializer.registerRpc("update_user_profile", updateUserProfile);
 
   logger.info("JavaScript logic loaded.");
 }
