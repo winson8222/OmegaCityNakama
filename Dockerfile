@@ -8,7 +8,7 @@ COPY tsconfig.json .
 COPY *.ts .
 RUN npx tsc
 
-FROM heroiclabs/nakama:3.3.0
+FROM heroiclabs/nakama:3.21.1
 
 COPY --from=node-builder /backend/build/*.js /nakama/data/modules/build/
 COPY local.yml /nakama/data/
