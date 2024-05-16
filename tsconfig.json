@@ -1,36 +1,29 @@
 {
-  "files": [
-    "./main.ts",
-    "./healthcheck.ts",
-    "./users.ts"
-  ],
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2016",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "noEmit": false,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
     "noUncheckedIndexedAccess": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "outDir": "./build", // Specify the output directory
+    "rootDir": "./src" // Specify the root directory
   },
   "include": [
-    "./main.ts",
-    "./healthcheck.ts",
-    "./users.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.mjs"
-  ],
-  "exclude": ["node_modules"]
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.cjs",
+    "src/**/*.mjs"
+, "echo.tsx", "healthcheck.tsx", "main.tsx", "members.tsx", "metadata.tsx", "users.tsx"],  "exclude": ["node_modules"]
 }

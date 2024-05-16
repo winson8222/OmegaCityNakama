@@ -1,8 +1,10 @@
-// Method use in main
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const listChannelMembers: nkruntime.RpcFunction = function (
+// @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
+const _listChannelMembers: nkruntime.RpcFunction = function (
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   _context: nkruntime.Context,
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   _logger: nkruntime.Logger,
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   nk: nkruntime.Nakama,
   _payload: string,
 ): string {

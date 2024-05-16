@@ -1,8 +1,10 @@
-// Method use in main
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const updateMetaData: nkruntime.RpcFunction = function (
+// @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
+const _updateMetaData: nkruntime.RpcFunction = function (
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   context: nkruntime.Context,
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   logger: nkruntime.Logger,
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   nk: nkruntime.Nakama,
   payload: string,
 ): string {

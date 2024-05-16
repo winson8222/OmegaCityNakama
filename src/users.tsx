@@ -1,8 +1,11 @@
-// Method use in main
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function rpcUsers(
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-prototype-builtins */
+function _rpcUsers(
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   _ctx: nkruntime.Context,
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   _logger: nkruntime.Logger,
+  // @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
   nk: nkruntime.Nakama,
   _payload: string,
 ): string {
@@ -38,7 +41,7 @@ function rpcUsers(
   }
 
   // Convert SQL result to JSON with consistent property order
-  const orderedUsers = users.map((obj) => reorderProperties(obj));
+  const orderedUsers = users.map((obj: any) => reorderProperties(obj));
 
   // Convert to JSON string
   const jsonString = JSON.stringify(orderedUsers);
