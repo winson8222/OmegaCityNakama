@@ -14,7 +14,7 @@ function getRoomStreamId(room: Room): nkruntime.Stream {
 }
 
 
-function rpcJoinRoomOnlineUsersStream(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+function rpcJoinRoomStreamAsOnline(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
         return JSON.stringify({ error: "Invalid room format" });
@@ -30,7 +30,7 @@ function rpcJoinRoomOnlineUsersStream(ctx: nkruntime.Context, logger: nkruntime.
     return JSON.stringify({ status: 'success' });
 }
 
-function rpcJoinRoomOfflineUsersStream(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+function rpcJoinRoomStreamAsOffline(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
         return JSON.stringify({ error: "Invalid room format" });
@@ -50,7 +50,7 @@ function rpcJoinRoomOfflineUsersStream(ctx: nkruntime.Context, logger: nkruntime
 // However, the function does not work properly for some strange reason. It only returns an empty array
 // even though the stream has users in it.
 // Instead, retrieving the users in the online users stream is done in the next-omegacity client side 
-function rpcGetRoomOnlineUsers(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+function rpcGetOnlineUsersInRoom(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
         return JSON.stringify({ error: "Invalid room format" });

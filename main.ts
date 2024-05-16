@@ -6,9 +6,9 @@ function InitModule(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkrunt
     initializer.registerRpc('join_online_users_stream', rpcJoinOnlineUsersStream);
     initializer.registerRpc('count_online_users', rpcCountOnlineUsers);
     initializer.registerRpc('get_online_users', rpcGetOnlineUsers);
-    initializer.registerRpc('join_room_online_users_stream', rpcJoinRoomOnlineUsersStream);
-    initializer.registerRpc('join_room_offline_users_stream', rpcJoinRoomOfflineUsersStream);
+    initializer.registerRpc('join_room_as_online', rpcJoinRoomStreamAsOnline);
+    initializer.registerRpc('join_room_as_offline', rpcJoinRoomStreamAsOffline);
     initializer.registerRpc('count_room_online_users', rpcCountRoomOnlineUsers);
-    initializer.registerRpc('get_room_online_users', rpcGetRoomOnlineUsers);
+    initializer.registerRpc('get_online_users_in_room', rpcGetOnlineUsersInRoom);
     logger.info('JavaScript logic loaded.');
 }
