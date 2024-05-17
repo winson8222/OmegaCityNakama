@@ -9,6 +9,7 @@ function isRoom(obj: any): obj is Room {
 /**
  * Get the stream ID of a room.
  */
+// @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
 function getRoomStreamId(room: Room): nkruntime.Stream {
     return {
         mode: 205,
@@ -20,6 +21,7 @@ function getRoomStreamId(room: Room): nkruntime.Stream {
  * Join the room stream as online user.
  * This means the user is visible to other users in the room.
  */
+// @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
 function rpcJoinRoomStreamAsOnline(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
@@ -40,6 +42,7 @@ function rpcJoinRoomStreamAsOnline(ctx: nkruntime.Context, logger: nkruntime.Log
  * Join the room stream as offline user.
  * This means the user is not visible to other users in the room.
  */
+// @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
 function rpcJoinRoomStreamAsOffline(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
@@ -58,6 +61,7 @@ function rpcJoinRoomStreamAsOffline(ctx: nkruntime.Context, logger: nkruntime.Lo
 /**
  * Get all online users in a room by getting all users in the room stream that are not hidden.
  */
+// @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
 function rpcGetOnlineUsersInRoom(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {
@@ -70,7 +74,8 @@ function rpcGetOnlineUsersInRoom(ctx: nkruntime.Context, logger: nkruntime.Logge
     // Presence means the user is online
     const presences = nk.streamUserList(roomStreamId, false);
     logger.info(`presences: ${JSON.stringify(presences)}`);
-    presences?.forEach(presence => {
+    // I am not sure about the type of presence, so I use any type for now
+    presences?.forEach((presence : any) => {
         roomOnlineUserIds[presence.userId] = {
             id: presence.userId,
             username: presence.username
@@ -83,6 +88,7 @@ function rpcGetOnlineUsersInRoom(ctx: nkruntime.Context, logger: nkruntime.Logge
 /**
  * Count all online users in a room by getting all users in the room stream that are not hidden.
  */
+// @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
 function rpcCountRoomOnlineUsers(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if  (!isRoom(json)) {

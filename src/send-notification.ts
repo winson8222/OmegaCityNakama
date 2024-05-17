@@ -23,6 +23,7 @@ function isNotification(obj: any): obj is Notification {
  * The notification should have a userId which is the id of the recipient, 
  * and a senderId which is the id of the sender.
  */
+// @ts-expect-error: TS2503: Cannot find namespace 'nkruntime'
 function rpcSendNotification(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
     const json = JSON.parse(payload);
     if (!isNotification(json)) {

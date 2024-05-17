@@ -1,17 +1,29 @@
 {
-  "file": [
-    "./main.ts",
-    "./healthcheck.ts",
-    "./users.ts"
-  ],
-  "compilerOptions" : {
-    "target": "es5",
-    "typeRoots": ["./node_modules"],
-    "outFile": "./build/index.js",
-    "strict": true,
-    "esModuleInterop": true,
+  "compilerOptions": {
+    "target": "es2016",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "checkJs": true,
     "skipLibCheck": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
-  }
-
+    "noEmit": false,
+    "esModuleInterop": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "outDir": "./build", // Specify the output directory
+    "rootDir": "./src" // Specify the root directory
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.cjs",
+    "src/**/*.mjs"
+, "echo.tsx", "healthcheck.tsx", "main.tsx", "members.tsx", "metadata.tsx", "users.tsx"],  "exclude": ["node_modules"]
 }

@@ -11,4 +11,9 @@ Update nakama version:
 3. Run docker compose up --build
 
 
+Default port:
+http://127.0.0.1:7351/
 
+pw: admin
+
+password: password
