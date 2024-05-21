@@ -5,9 +5,10 @@ docker compose up
 If no change after modification:
 docker-compose build --no-cache
 
-Default port:
-http://127.0.0.1:7351/
+Update nakama version:
+1. Go to https://github.com/heroiclabs/nakama/releases
+2. In Dockerfile, edit `FROM heroiclabs/nakama:{version}` (e.g. FROM heroiclabs/nakama:3.21.1)
+3. Run docker compose up --build
 
-pw: admin
 
-password: password
+
