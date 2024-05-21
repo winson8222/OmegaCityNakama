@@ -18,7 +18,6 @@ COPY src/ ./src
 # Compile TypeScript files
 RUN npx tsc
 
-# Stage 2: Copy the built files to the final image
 FROM heroiclabs/nakama:3.21.0
 
 # Create the necessary directory in the final image
