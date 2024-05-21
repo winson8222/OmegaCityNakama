@@ -31,6 +31,11 @@ function rpcJoinRoomStreamAsOnline(ctx: nkruntime.Context, logger: nkruntime.Log
     const hidden: boolean = false;
     const persistence: boolean = true;
     
+    // Kicks the offline user that is hidden out of the room stream,
+    // and joins the same room stream as an online user that is visible to the room stream.
+    // The online user will show up as presence events in the room stream.
+    // I tried to research how to change the visibility of the user that is already in the room stream,
+    // but I couldn't find any information on that. So I decided to use this method to change the visibility of the user.
     nk.streamUserLeave(ctx.userId, ctx.sessionId, roomStreamId);
     nk.streamUserJoin(ctx.userId, ctx.sessionId, roomStreamId, hidden, persistence);
     return JSON.stringify({ status: 'success' });
