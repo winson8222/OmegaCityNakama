@@ -2,3 +2,6 @@ logger:
   level: "DEBUG"
 runtime:
   js_entrypoint: "build/index.js"
+session:
+  token_expiry_sec: 86400  # 1 day
+  refresh_token_expiry_sec: 604800  # 1 week
