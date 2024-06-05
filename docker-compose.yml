@@ -4,8 +4,12 @@ services:
     command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all
     container_name: template_nk_postgres
     environment:
-      - POSTGRES_DB=nakama
-      - POSTGRES_PASSWORD=localdb
+      POSTGRES_DB: nakama
+      POSTGRES_USER: /run/secrets/db_user
+      POSTGRES_PASSWORD: /run/secrets/db_password
+    secrets:
+      - db_user
+      - db_password
     expose:
       - '8080'
       - '5432'
@@ -48,6 +52,12 @@ services:
       - '7350:7350'
       - '7351:7351'
     restart: unless-stopped
+
+secrets:
+   db_user:
+     file: db_user.txt
+   db_password:
+     file: db_password.txt
 
 volumes:
   data:
