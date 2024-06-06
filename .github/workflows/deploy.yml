@@ -19,6 +19,8 @@ jobs:
           script: |
             rm -rf OmegaCityNakama
             git clone git@github.com:winson8222/OmegaCityNakama.git
+            cd OmegaCityNakama
+            cp ../OmegaCityNakamaSecrets/* .
             echo "OmegaCityNakama cloned successfully"
 
             
