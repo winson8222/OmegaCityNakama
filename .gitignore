@@ -1,1 +1,8 @@
 node_modules
+
+# SECRETS
+db_password.txt
+db_user.txt
+
+# ENV
+.env
