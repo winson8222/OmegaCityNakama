@@ -14,5 +14,7 @@ function InitModule(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkrunt
     initializer.registerRpc('get_friends_from_userid', rpcGetFriendsFromUserID);
     initializer.registerRpc('get_non_friends_ids_from_userid', rpcGetNonFriendsUserIdsFromUserID);  
     initializer.registerRpc('get_friends_ids_from_userid', rpcGetFriendsUserIdsFromUserID);
+    initializer.registerRpc('count_non_friends_ids_from_userid', rpcCountNonFriendsUserIdsFromUserID);
+    initializer.registerRpc('count_friends_ids_from_userid', rpcCountFriendsUserIdsFromUserID);
     logger.info('JavaScript logic loaded.');
 }

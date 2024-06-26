@@ -196,3 +196,72 @@ function rpcGetFriendsUserIdsFromUserID(ctx: nkruntime.Context,
     const friendsUserIDs = friendsUsersQueryResult.map(obj => obj.id);
     return JSON.stringify({ friendsUserIDs: friendsUserIDs, cursor: lastID });
 }
+
+function rpcCountNonFriendsUserIdsFromUserID(ctx: nkruntime.Context, 
+  logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    const json = JSON.parse(payload);
+    if  (!isUserIDsListInfo(json)) {
+        return JSON.stringify({ error: "Invalid get friends list info format" });
+    }
+    const userIDObj = (json as UserIDsListInfo);
+    let searchTermQuery = '';
+    if (userIDObj.searchTerm) {
+      searchTermQuery = `AND u.username LIKE '%${userIDObj.searchTerm}%'`;
+    }
+    
+    const nonFriendsUsersQueryResult = nk.sqlQuery(`SELECT COUNT(*)
+        FROM public.users u
+        WHERE u.id != '00000000-0000-0000-0000-000000000000'
+          AND u.id != '${userIDObj.userId}'
+          ${searchTermQuery}
+          AND u.id NOT IN (
+            SELECT destination_id
+            FROM public.user_edge
+            WHERE source_id = '${userIDObj.userId}'
+            UNION
+            SELECT source_id
+            FROM public.user_edge
+            WHERE destination_id = '${userIDObj.userId}'
+        );`);
+    
+    let count = 0;
+    if (nonFriendsUsersQueryResult.length > 0) {
+      count = nonFriendsUsersQueryResult[0].count;
+    }
+    return JSON.stringify({ count: count });
+}
+
+function rpcCountFriendsUserIdsFromUserID(ctx: nkruntime.Context, 
+  logger: nkruntime.Logger, nk: nkruntime.Nakama, payload: string): string {
+    const json = JSON.parse(payload);
+    if  (!isFriendsListInfo(json)) {
+        return JSON.stringify({ error: "Invalid get friends list info format" });
+    }
+    const userIDObj = (json as FriendsListInfo);
+    let searchTermQuery = '';
+    let friendStateQuery = '';
+    if (userIDObj.searchTerm) {
+      searchTermQuery = `AND u.username LIKE '%${userIDObj.searchTerm}%'`;
+    }
+    if (userIDObj.state !== undefined) {
+      friendStateQuery = `AND state = ${userIDObj.state}`;
+    }
+    
+    const friendsUsersQueryResult = nk.sqlQuery(`SELECT COUNT(*)
+        FROM public.users u
+        WHERE u.id != '00000000-0000-0000-0000-000000000000'
+          AND u.id != '${userIDObj.userId}'
+          ${searchTermQuery}
+          AND u.id IN (
+            SELECT destination_id
+            FROM public.user_edge
+            WHERE source_id = '${userIDObj.userId}'
+                ${friendStateQuery}
+        );`);
+    
+    let count = 0;
+    if (friendsUsersQueryResult.length > 0) {
+      count = friendsUsersQueryResult[0].count;
+    }
+    return JSON.stringify({ count: count });
+}
