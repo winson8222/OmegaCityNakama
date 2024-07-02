@@ -1,3 +1,11 @@
+interface SelectUserQueryStatement {
+  limitQuery: string,
+  cursorQuery: string,
+  searchTermQuery: string,
+  filterQuery: string
+}
+
+
 /**
  * Contains parameters to fetch user ids list from a user ID.
  */
@@ -104,36 +112,7 @@ function rpcGetNonFriendsUserIdsFromUserID(ctx: nkruntime.Context,
           return JSON.stringify({ error: "Invalid get friends list info format" });
       }
       const userIDObj = (json as UserIDsListInfo);
-      let cursorQuery = '';
-      let limitQuery = 'LIMIT 100';
-      let searchTermQuery = '';
-      if (userIDObj.limit) {
-        limitQuery = `LIMIT ${userIDObj.limit}`;
-      }
-      if (userIDObj.cursor) {
-        cursorQuery = `AND u.id > '${userIDObj.cursor}'`;
-      }
-      if (userIDObj.searchTerm) {
-        searchTermQuery = `AND u.username LIKE '%${userIDObj.searchTerm}%'`;
-      }
-
-      const nonFriendsUsersQueryResult = nk.sqlQuery(`SELECT *
-          FROM public.users u
-          WHERE u.id != '00000000-0000-0000-0000-000000000000'
-            AND u.id != '${userIDObj.userId}'
-            ${cursorQuery}
-            ${searchTermQuery}
-            AND u.id NOT IN (
-              SELECT destination_id
-              FROM public.user_edge
-              WHERE source_id = '${userIDObj.userId}'
-              UNION
-              SELECT source_id
-              FROM public.user_edge
-              WHERE destination_id = '${userIDObj.userId}'
-          )
-          ORDER BY u.id ASC
-          ${limitQuery};`);
+      const nonFriendsUsersQueryResult = nk.sqlQuery(getSelectQueryUserString(false, false, userIDObj));
       
       let lastID = undefined;
       if (nonFriendsUsersQueryResult.length > 0) {
@@ -155,37 +134,7 @@ function rpcGetFriendsUserIdsFromUserID(ctx: nkruntime.Context,
         return JSON.stringify({ error: "Invalid get friends list info format" });
     }
     const userIDObj = (json as FriendsListInfo);
-    let cursorQuery = '';
-    let limitQuery = 'LIMIT 100';
-    let searchTermQuery = '';
-    let friendStateQuery = '';
-    if (userIDObj.limit) {
-      limitQuery = `LIMIT ${userIDObj.limit}`;
-    }
-    if (userIDObj.cursor) {
-      cursorQuery = `AND u.id > '${userIDObj.cursor}'`;
-    }
-    if (userIDObj.searchTerm) {
-      searchTermQuery = `AND u.username LIKE '%${userIDObj.searchTerm}%'`;
-    }
-    if (userIDObj.state !== undefined) {
-      friendStateQuery = `AND state = ${userIDObj.state}`;
-    }
-
-    const friendsUsersQueryResult = nk.sqlQuery(`SELECT *
-        FROM public.users u
-        WHERE u.id != '00000000-0000-0000-0000-000000000000'
-          AND u.id != '${userIDObj.userId}'
-          ${cursorQuery}
-          ${searchTermQuery}
-          AND u.id IN (
-            SELECT destination_id
-            FROM public.user_edge
-            WHERE source_id = '${userIDObj.userId}'
-                ${friendStateQuery}
-        )
-        ORDER BY u.id ASC
-        ${limitQuery};`);
+    const friendsUsersQueryResult = nk.sqlQuery(getSelectQueryUserString(false, true, userIDObj));
     
     let lastID = undefined;
     if (friendsUsersQueryResult.length > 0) {
@@ -203,26 +152,8 @@ function rpcCountNonFriendsUserIdsFromUserID(ctx: nkruntime.Context,
     if  (!isUserIDsListInfo(json)) {
         return JSON.stringify({ error: "Invalid get friends list info format" });
     }
-    const userIDObj = (json as UserIDsListInfo);
-    let searchTermQuery = '';
-    if (userIDObj.searchTerm) {
-      searchTermQuery = `AND u.username LIKE '%${userIDObj.searchTerm}%'`;
-    }
-    
-    const nonFriendsUsersQueryResult = nk.sqlQuery(`SELECT COUNT(*)
-        FROM public.users u
-        WHERE u.id != '00000000-0000-0000-0000-000000000000'
-          AND u.id != '${userIDObj.userId}'
-          ${searchTermQuery}
-          AND u.id NOT IN (
-            SELECT destination_id
-            FROM public.user_edge
-            WHERE source_id = '${userIDObj.userId}'
-            UNION
-            SELECT source_id
-            FROM public.user_edge
-            WHERE destination_id = '${userIDObj.userId}'
-        );`);
+    const userIDObj = (json as UserIDsListInfo); 
+    const nonFriendsUsersQueryResult = nk.sqlQuery(getSelectQueryUserString(true, false, userIDObj));
     
     let count = 0;
     if (nonFriendsUsersQueryResult.length > 0) {
@@ -238,30 +169,96 @@ function rpcCountFriendsUserIdsFromUserID(ctx: nkruntime.Context,
         return JSON.stringify({ error: "Invalid get friends list info format" });
     }
     const userIDObj = (json as FriendsListInfo);
-    let searchTermQuery = '';
-    let friendStateQuery = '';
-    if (userIDObj.searchTerm) {
-      searchTermQuery = `AND u.username LIKE '%${userIDObj.searchTerm}%'`;
-    }
-    if (userIDObj.state !== undefined) {
-      friendStateQuery = `AND state = ${userIDObj.state}`;
-    }
-    
-    const friendsUsersQueryResult = nk.sqlQuery(`SELECT COUNT(*)
-        FROM public.users u
-        WHERE u.id != '00000000-0000-0000-0000-000000000000'
-          AND u.id != '${userIDObj.userId}'
-          ${searchTermQuery}
-          AND u.id IN (
-            SELECT destination_id
-            FROM public.user_edge
-            WHERE source_id = '${userIDObj.userId}'
-                ${friendStateQuery}
-        );`);
+    const friendsUsersQueryResult = nk.sqlQuery(getSelectQueryUserString(true, true, userIDObj));
     
     let count = 0;
     if (friendsUsersQueryResult.length > 0) {
       count = friendsUsersQueryResult[0].count;
     }
     return JSON.stringify({ count: count });
+}
+
+function getNonFriendsQueryStrings(userIDListInfoObj: UserIDsListInfo): SelectUserQueryStatement {
+  let cursorQuery = '';
+  let limitQuery = 'LIMIT 100';
+  let searchTermQuery = '';
+  if (userIDListInfoObj.limit) {
+    limitQuery = `LIMIT ${userIDListInfoObj.limit}`;
+  }
+  if (userIDListInfoObj.cursor) {
+    cursorQuery = `AND u.id > '${userIDListInfoObj.cursor}'`;
+  }
+  if (userIDListInfoObj.searchTerm) {
+    searchTermQuery = `AND u.username LIKE '%${userIDListInfoObj.searchTerm}%'`;
+  }
+  const filterQuery = `AND u.id NOT IN (
+      SELECT destination_id
+      FROM public.user_edge
+      WHERE source_id = '${userIDListInfoObj.userId}'
+      UNION
+      SELECT source_id
+      FROM public.user_edge
+      WHERE destination_id = '${userIDListInfoObj.userId}'
+  )`;
+
+  return { limitQuery, cursorQuery, searchTermQuery, filterQuery };
+}
+
+function getFriendsQueryStrings(friendsListInfoObj: FriendsListInfo): SelectUserQueryStatement {
+  const limitCursorSearchTermQuery = getNonFriendsQueryStrings(friendsListInfoObj);
+  const limitQuery = limitCursorSearchTermQuery.limitQuery;
+  const cursorQuery = limitCursorSearchTermQuery.cursorQuery;
+  const searchTermQuery = limitCursorSearchTermQuery.searchTermQuery;
+  let friendStateQuery = '';
+
+  if (friendsListInfoObj.state !== undefined) {
+    friendStateQuery = `AND state = ${friendsListInfoObj.state}`;
+  }
+  const filterQuery = `AND u.id IN (
+      SELECT destination_id
+      FROM public.user_edge
+      WHERE source_id = '${friendsListInfoObj.userId}'
+          ${friendStateQuery}
+  )`;
+  return {
+    limitQuery,
+    cursorQuery,
+    searchTermQuery,
+    filterQuery
+  };
+}
+
+
+function getSelectQueryUserString(isCounting: boolean, isFriends: boolean, userIDListInfoObj: UserIDsListInfo): string {
+  let selectQuery = '';
+  let sortQuery = '';
+  if (isCounting) {
+    selectQuery = 'SELECT COUNT(*)';
+  } else {
+    selectQuery = 'SELECT *';
+    sortQuery = 'ORDER BY u.id ASC';
+  }
+  
+  let fromQuery = 'FROM public.users u';
+  let whereQuery = `WHERE u.id != '00000000-0000-0000-0000-000000000000' AND u.id != '${userIDListInfoObj.userId}'`;
+  let limitQuery = '';
+  let cursorQuery = '';
+  let searchTermQuery = '';
+  let filterQuery = '';
+
+  if (isFriends) {
+    const friendsListInfoObj = userIDListInfoObj as FriendsListInfo;
+    const friendsQueryStrings = getFriendsQueryStrings(friendsListInfoObj);
+    limitQuery = friendsQueryStrings.limitQuery;
+    cursorQuery = friendsQueryStrings.cursorQuery;
+    searchTermQuery = friendsQueryStrings.searchTermQuery;
+    filterQuery = friendsQueryStrings.filterQuery;
+  } else {
+    const limitCursorSearchTermQuery = getNonFriendsQueryStrings(userIDListInfoObj);
+    limitQuery = limitCursorSearchTermQuery.limitQuery;
+    cursorQuery = limitCursorSearchTermQuery.cursorQuery;
+    searchTermQuery = limitCursorSearchTermQuery.searchTermQuery;
+  }
+
+  return `${selectQuery} ${fromQuery} ${whereQuery} ${cursorQuery} ${searchTermQuery} ${filterQuery} ${sortQuery} ${limitQuery};`;
 }
