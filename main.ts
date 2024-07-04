@@ -12,5 +12,8 @@ function InitModule(ctx: nkruntime.Context, logger: nkruntime.Logger, nk: nkrunt
     initializer.registerRpc('get_online_users_in_room', rpcGetOnlineUsersInRoom);
     initializer.registerRpc('update_user_profile', updateUserProfile);
     initializer.registerRpc('get_friends_from_userid', rpcGetFriendsFromUserID);  
+    initializer.registerRpc('get_group_posts', rpcGetGroupPosts);
+    initializer.registerRpc('get_group_post_comments', rpcGetGroupPostComments);
+    initializer.registerRpc('get_group_post_comment_replies', rpcGetGroupPostCommentReplies);
     logger.info('JavaScript logic loaded.');
 }
