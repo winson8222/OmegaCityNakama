@@ -250,13 +250,13 @@ function getSelectQueryUserString(isCounting: boolean, isFriends: boolean, userI
     const friendsListInfoObj = userIDListInfoObj as FriendsListInfo;
     const friendsQueryStrings = getFriendsQueryStrings(friendsListInfoObj);
     limitQuery = friendsQueryStrings.limitQuery;
-    cursorQuery = friendsQueryStrings.cursorQuery;
+    cursorQuery = isCounting ? friendsQueryStrings.cursorQuery : '';
     searchTermQuery = friendsQueryStrings.searchTermQuery;
     filterQuery = friendsQueryStrings.filterQuery;
   } else {
     const limitCursorSearchTermQuery = getNonFriendsQueryStrings(userIDListInfoObj);
     limitQuery = limitCursorSearchTermQuery.limitQuery;
-    cursorQuery = limitCursorSearchTermQuery.cursorQuery;
+    cursorQuery = isCounting ? limitCursorSearchTermQuery.cursorQuery : '';
     searchTermQuery = limitCursorSearchTermQuery.searchTermQuery;
   }
 
