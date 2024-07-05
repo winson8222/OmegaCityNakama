@@ -112,6 +112,7 @@ function rpcGetNonFriendsUserIdsFromUserID(ctx: nkruntime.Context,
           return JSON.stringify({ error: "Invalid get friends list info format" });
       }
       const userIDObj = (json as UserIDsListInfo);
+      logger.info(`nonfriends query: ${getSelectQueryUserString(false, false, userIDObj)}`)
       const nonFriendsUsersQueryResult = nk.sqlQuery(getSelectQueryUserString(false, false, userIDObj));
       
       let lastID = undefined;
@@ -192,13 +193,13 @@ function getNonFriendsQueryStrings(userIDListInfoObj: UserIDsListInfo): SelectUs
     searchTermQuery = `AND u.username LIKE '%${userIDListInfoObj.searchTerm}%'`;
   }
   const filterQuery = `AND u.id NOT IN (
-      SELECT destination_id
+      (SELECT destination_id
       FROM public.user_edge
-      WHERE source_id = '${userIDListInfoObj.userId}'
+      WHERE source_id = '${userIDListInfoObj.userId}')
       UNION
-      SELECT source_id
+      (SELECT source_id
       FROM public.user_edge
-      WHERE destination_id = '${userIDListInfoObj.userId}'
+      WHERE destination_id = '${userIDListInfoObj.userId}')
   )`;
 
   return { limitQuery, cursorQuery, searchTermQuery, filterQuery };
@@ -233,9 +234,9 @@ function getSelectQueryUserString(isCounting: boolean, isFriends: boolean, userI
   let selectQuery = '';
   let sortQuery = '';
   if (isCounting) {
-    selectQuery = 'SELECT COUNT(*)';
+    selectQuery = 'SELECT COUNT(id)';
   } else {
-    selectQuery = 'SELECT *';
+    selectQuery = 'SELECT id';
     sortQuery = 'ORDER BY u.id ASC';
   }
   
@@ -250,14 +251,15 @@ function getSelectQueryUserString(isCounting: boolean, isFriends: boolean, userI
     const friendsListInfoObj = userIDListInfoObj as FriendsListInfo;
     const friendsQueryStrings = getFriendsQueryStrings(friendsListInfoObj);
     limitQuery = friendsQueryStrings.limitQuery;
-    cursorQuery = isCounting ? friendsQueryStrings.cursorQuery : '';
+    cursorQuery = !isCounting ? friendsQueryStrings.cursorQuery : '';
     searchTermQuery = friendsQueryStrings.searchTermQuery;
     filterQuery = friendsQueryStrings.filterQuery;
   } else {
-    const limitCursorSearchTermQuery = getNonFriendsQueryStrings(userIDListInfoObj);
-    limitQuery = limitCursorSearchTermQuery.limitQuery;
-    cursorQuery = isCounting ? limitCursorSearchTermQuery.cursorQuery : '';
-    searchTermQuery = limitCursorSearchTermQuery.searchTermQuery;
+    const nonFriendsQueryStrings = getNonFriendsQueryStrings(userIDListInfoObj);
+    limitQuery = nonFriendsQueryStrings.limitQuery;
+    cursorQuery = !isCounting ? nonFriendsQueryStrings.cursorQuery : '';
+    searchTermQuery = nonFriendsQueryStrings.searchTermQuery;
+    filterQuery = nonFriendsQueryStrings.filterQuery
   }
 
   return `${selectQuery} ${fromQuery} ${whereQuery} ${cursorQuery} ${searchTermQuery} ${filterQuery} ${sortQuery} ${limitQuery};`;
