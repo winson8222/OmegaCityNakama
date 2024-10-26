@@ -118,21 +118,26 @@ function rpcGetOnlineUsersInRoom(
   return JSON.stringify(roomOnlineUserIds);
 }
 
-/**
- * Count all online users in a room by getting all users in the room stream that are not hidden.
- */
 function rpcCountRoomOnlineUsers(
-  ctx: nkruntime.Context,
-  logger: nkruntime.Logger,
-  nk: nkruntime.Nakama,
-  payload: string
-): string {
-  const json = JSON.parse(payload);
-  if (!isRoom(json)) {
-    return JSON.stringify({ error: "Invalid room format" });
+    ctx: nkruntime.Context,
+    logger: nkruntime.Logger,
+    nk: nkruntime.Nakama,
+    payload: string
+  ): string {
+    let json;
+    try {
+      json = JSON.parse(payload);
+    } catch (e) {
+      return JSON.stringify({ status: "error", message: "Invalid JSON format" });
+    }
+  
+    if (!isRoom(json)) {
+      return JSON.stringify({ status: "error", message: "Invalid room format" });
+    }
+  
+    const room = json as Room;
+    const roomStreamId = getRoomStreamId(room);
+    const presences = nk.streamUserList(roomStreamId, false);
+    logger.info("count room online users", presences.length.toString());
+    return JSON.stringify({ status: "success", count: presences.length.toString() });
   }
-  const room = json as Room;
-  const roomStreamId = getRoomStreamId(room);
-  const presences = nk.streamUserList(roomStreamId, false);
-  return presences.length.toString();
-}
